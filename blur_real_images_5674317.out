@@ -1,0 +1,559 @@
+=========================================
+Real Image Blur Test
+Job started at: Sun Dec 21 23:31:43 EET 2025
+Job ID: 5674317
+Node: g1101
+Number of CPUs: 8
+=========================================
+
+Compiling the code...
+rm -rf obj/*.o blur_benchmark output_images/*.png
+nvcc -c -o obj/main.o src/main.cu -O3 -arch=sm_70 -Xcompiler -fopenmp -I./include -I/usr/local/cuda/include
+nvcc -c -o obj/support.o src/support.cu -O3 -arch=sm_70 -Xcompiler -fopenmp -I./include -I/usr/local/cuda/include
+nvcc -c -o obj/kernels.o src/kernels.cu -O3 -arch=sm_70 -Xcompiler -fopenmp -I./include -I/usr/local/cuda/include
+g++ -c -o obj/image_io.o src/image_io.cpp -O3 -fopenmp -I./include -I/usr/local/cuda/include
+g++ -c -o obj/cpu_blur.o src/cpu_blur.cpp -O3 -fopenmp -I./include -I/usr/local/cuda/include
+nvcc obj/main.o obj/support.o obj/kernels.o obj/image_io.o obj/cpu_blur.o -o blur_benchmark -lcudart -L/usr/local/cuda/lib64 -Xcompiler -fopenmp -lm
+Compilation successful!
+
+=========================================
+PART 1: BENCHMARK MODE (Synthetic Images)
+=========================================
+
+--- Test 1: 512x512, 5x5 kernel, light blur (sigma=1.5) ---
+
+================================================================================
+                   GPU GAUSSIAN BLUR - PERFORMANCE BENCHMARK                   
+================================================================================
+
+GPU Device Information:
+  Name: NVIDIA A100-SXM4-40GB
+  Compute Capability: 8.0
+  Global Memory: 42.48 GB
+  Shared Memory per Block: 48 KB
+  Max Threads per Block: 1024
+  Number of SMs: 108
+
+
+Generating synthetic test image...
+
+Configuration:
+  Image size: 512x512
+  Channels: 3
+  Kernel size: 5
+  Sigma: 1.50
+  Batch size: 1
+
+Image: 512x512, 3 channels
+Gaussian kernel: size=5, sigma=1.50
+--------------------------------------------------------------------------------
+
+[1/4] CPU Baseline (OpenMP)...
+  Time: 0.003184 s
+
+[2/4] Naive (Global Memory)...
+  Kernel time: 0.000099 s
+  Speedup vs CPU: 32.16x
+TEST PASSED (max error: 0.000000)
+
+[3/4] Tiled (Shared Memory)...
+  Kernel time: 0.000043 s
+  Speedup vs CPU: 74.05x
+TEST PASSED (max error: 0.000000)
+
+[4/4] Separable (Global Memory - Best)...
+  Kernel time: 0.000040 s
+  Speedup vs CPU: 79.60x
+TEST PASSED (max error: 0.000000)
+
+
+================================================================================
+                           BATCH PROCESSING TEST                            
+================================================================================
+Generated 1 test images (512x512, 3 channels)
+
+CPU Batch Processing...
+  Total time: 0.013156 s
+  Throughput: 76.01 images/sec
+
+=== Batch Processing: 1 images using CUDA Streams ===
+Total batch processing time: 0.000563 s
+Throughput: 1776.20 images/sec
+Average time per image: 0.000563 s
+
+================================================================================
+                         BENCHMARK COMPLETED                                
+================================================================================
+
+
+--- Test 2: 1024x1024, 7x7 kernel, standard blur (sigma=2.0) ---
+
+================================================================================
+                   GPU GAUSSIAN BLUR - PERFORMANCE BENCHMARK                   
+================================================================================
+
+GPU Device Information:
+  Name: NVIDIA A100-SXM4-40GB
+  Compute Capability: 8.0
+  Global Memory: 42.48 GB
+  Shared Memory per Block: 48 KB
+  Max Threads per Block: 1024
+  Number of SMs: 108
+
+
+Generating synthetic test image...
+
+Configuration:
+  Image size: 1024x1024
+  Channels: 3
+  Kernel size: 7
+  Sigma: 2.00
+  Batch size: 1
+
+Image: 1024x1024, 3 channels
+Gaussian kernel: size=7, sigma=2.00
+--------------------------------------------------------------------------------
+
+[1/4] CPU Baseline (OpenMP)...
+  Time: 0.011271 s
+
+[2/4] Naive (Global Memory)...
+  Kernel time: 0.000269 s
+  Speedup vs CPU: 41.90x
+TEST PASSED (max error: 0.000000)
+
+[3/4] Tiled (Shared Memory)...
+  Kernel time: 0.000176 s
+  Speedup vs CPU: 64.04x
+TEST PASSED (max error: 0.000000)
+
+[4/4] Separable (Global Memory - Best)...
+  Kernel time: 0.000104 s
+  Speedup vs CPU: 108.38x
+TEST PASSED (max error: 0.000000)
+
+
+================================================================================
+                           BATCH PROCESSING TEST                            
+================================================================================
+Generated 1 test images (1024x1024, 3 channels)
+
+CPU Batch Processing...
+  Total time: 0.064363 s
+  Throughput: 15.54 images/sec
+
+=== Batch Processing: 1 images using CUDA Streams ===
+Total batch processing time: 0.002188 s
+Throughput: 457.04 images/sec
+Average time per image: 0.002188 s
+
+================================================================================
+                         BENCHMARK COMPLETED                                
+================================================================================
+
+
+--- Test 3: 1024x1024, 11x11 kernel, strong blur (sigma=3.0) ---
+
+================================================================================
+                   GPU GAUSSIAN BLUR - PERFORMANCE BENCHMARK                   
+================================================================================
+
+GPU Device Information:
+  Name: NVIDIA A100-SXM4-40GB
+  Compute Capability: 8.0
+  Global Memory: 42.48 GB
+  Shared Memory per Block: 48 KB
+  Max Threads per Block: 1024
+  Number of SMs: 108
+
+
+Generating synthetic test image...
+
+Configuration:
+  Image size: 1024x1024
+  Channels: 3
+  Kernel size: 11
+  Sigma: 3.00
+  Batch size: 1
+
+Image: 1024x1024, 3 channels
+Gaussian kernel: size=11, sigma=3.00
+--------------------------------------------------------------------------------
+
+[1/4] CPU Baseline (OpenMP)...
+  Time: 0.018351 s
+
+[2/4] Naive (Global Memory)...
+  Kernel time: 0.000502 s
+  Speedup vs CPU: 36.56x
+TEST PASSED (max error: 0.000001)
+
+[3/4] Tiled (Shared Memory)...
+  Kernel time: 0.000358 s
+  Speedup vs CPU: 51.26x
+TEST FAILED: 716612/3145728 elements exceed tolerance (max error: 0.125310)
+
+[4/4] Separable (Global Memory - Best)...
+  Kernel time: 0.000124 s
+  Speedup vs CPU: 147.99x
+TEST PASSED (max error: 0.000000)
+
+
+================================================================================
+                           BATCH PROCESSING TEST                            
+================================================================================
+Generated 1 test images (1024x1024, 3 channels)
+
+CPU Batch Processing...
+  Total time: 0.123392 s
+  Throughput: 8.10 images/sec
+
+=== Batch Processing: 1 images using CUDA Streams ===
+Total batch processing time: 0.002239 s
+Throughput: 446.63 images/sec
+Average time per image: 0.002239 s
+
+================================================================================
+                         BENCHMARK COMPLETED                                
+================================================================================
+
+
+--- Test 4: 2048x2048, 7x7 kernel, standard blur (sigma=2.0) ---
+
+================================================================================
+                   GPU GAUSSIAN BLUR - PERFORMANCE BENCHMARK                   
+================================================================================
+
+GPU Device Information:
+  Name: NVIDIA A100-SXM4-40GB
+  Compute Capability: 8.0
+  Global Memory: 42.48 GB
+  Shared Memory per Block: 48 KB
+  Max Threads per Block: 1024
+  Number of SMs: 108
+
+
+Generating synthetic test image...
+
+Configuration:
+  Image size: 2048x2048
+  Channels: 3
+  Kernel size: 7
+  Sigma: 2.00
+  Batch size: 1
+
+Image: 2048x2048, 3 channels
+Gaussian kernel: size=7, sigma=2.00
+--------------------------------------------------------------------------------
+
+[1/4] CPU Baseline (OpenMP)...
+  Time: 0.034634 s
+
+[2/4] Naive (Global Memory)...
+  Kernel time: 0.000857 s
+  Speedup vs CPU: 40.41x
+TEST PASSED (max error: 0.000000)
+
+[3/4] Tiled (Shared Memory)...
+  Kernel time: 0.000600 s
+  Speedup vs CPU: 57.72x
+TEST PASSED (max error: 0.000000)
+
+[4/4] Separable (Global Memory - Best)...
+  Kernel time: 0.000297 s
+  Speedup vs CPU: 116.61x
+TEST PASSED (max error: 0.000000)
+
+
+================================================================================
+                           BATCH PROCESSING TEST                            
+================================================================================
+Generated 1 test images (2048x2048, 3 channels)
+
+CPU Batch Processing...
+  Total time: 0.258227 s
+  Throughput: 3.87 images/sec
+
+=== Batch Processing: 1 images using CUDA Streams ===
+Total batch processing time: 0.008692 s
+Throughput: 115.05 images/sec
+Average time per image: 0.008692 s
+
+================================================================================
+                         BENCHMARK COMPLETED                                
+================================================================================
+
+
+--- Test 5: 3840x2160 (4K), 9x9 kernel, medium blur (sigma=2.5) ---
+
+================================================================================
+                   GPU GAUSSIAN BLUR - PERFORMANCE BENCHMARK                   
+================================================================================
+
+GPU Device Information:
+  Name: NVIDIA A100-SXM4-40GB
+  Compute Capability: 8.0
+  Global Memory: 42.48 GB
+  Shared Memory per Block: 48 KB
+  Max Threads per Block: 1024
+  Number of SMs: 108
+
+
+Generating synthetic test image...
+
+Configuration:
+  Image size: 3840x2160
+  Channels: 3
+  Kernel size: 9
+  Sigma: 2.50
+  Batch size: 1
+
+Image: 3840x2160, 3 channels
+Gaussian kernel: size=9, sigma=2.50
+--------------------------------------------------------------------------------
+
+[1/4] CPU Baseline (OpenMP)...
+  Time: 0.079351 s
+
+[2/4] Naive (Global Memory)...
+  Kernel time: 0.002420 s
+  Speedup vs CPU: 32.79x
+TEST PASSED (max error: 0.000001)
+
+[3/4] Tiled (Shared Memory)...
+  Kernel time: 0.001770 s
+  Speedup vs CPU: 44.83x
+TEST PASSED (max error: 0.000001)
+
+[4/4] Separable (Global Memory - Best)...
+  Kernel time: 0.000619 s
+  Speedup vs CPU: 128.19x
+TEST PASSED (max error: 0.000000)
+
+
+================================================================================
+                           BATCH PROCESSING TEST                            
+================================================================================
+Generated 1 test images (3840x2160, 3 channels)
+
+CPU Batch Processing...
+  Total time: 0.618131 s
+  Throughput: 1.62 images/sec
+
+=== Batch Processing: 1 images using CUDA Streams ===
+Total batch processing time: 0.016902 s
+Throughput: 59.16 images/sec
+Average time per image: 0.016902 s
+
+================================================================================
+                         BENCHMARK COMPLETED                                
+================================================================================
+
+
+--- Test 6: Batch of 10 images (1024x1024), 7x7 kernel ---
+
+================================================================================
+                   GPU GAUSSIAN BLUR - PERFORMANCE BENCHMARK                   
+================================================================================
+
+GPU Device Information:
+  Name: NVIDIA A100-SXM4-40GB
+  Compute Capability: 8.0
+  Global Memory: 42.48 GB
+  Shared Memory per Block: 48 KB
+  Max Threads per Block: 1024
+  Number of SMs: 108
+
+
+Generating synthetic test image...
+
+Configuration:
+  Image size: 1024x1024
+  Channels: 3
+  Kernel size: 7
+  Sigma: 2.00
+  Batch size: 10
+
+Image: 1024x1024, 3 channels
+Gaussian kernel: size=7, sigma=2.00
+--------------------------------------------------------------------------------
+
+[1/4] CPU Baseline (OpenMP)...
+  Time: 0.011138 s
+
+[2/4] Naive (Global Memory)...
+  Kernel time: 0.000269 s
+  Speedup vs CPU: 41.41x
+TEST PASSED (max error: 0.000000)
+
+[3/4] Tiled (Shared Memory)...
+  Kernel time: 0.000177 s
+  Speedup vs CPU: 62.93x
+TEST PASSED (max error: 0.000000)
+
+[4/4] Separable (Global Memory - Best)...
+  Kernel time: 0.000104 s
+  Speedup vs CPU: 107.10x
+TEST PASSED (max error: 0.000000)
+
+
+================================================================================
+                           BATCH PROCESSING TEST                            
+================================================================================
+Generated 10 test images (1024x1024, 3 channels)
+
+CPU Batch Processing...
+  Total time: 0.127624 s
+  Throughput: 78.36 images/sec
+
+=== Batch Processing: 10 images using CUDA Streams ===
+Total batch processing time: 0.018003 s
+Throughput: 555.46 images/sec
+Average time per image: 0.001800 s
+
+================================================================================
+                         BENCHMARK COMPLETED                                
+================================================================================
+
+
+
+=========================================
+PART 2: REAL IMAGE MODE (Process Files)
+=========================================
+
+Found 1 image(s) in input_images/
+
+=========================================
+Processing images in BATCH MODE with different blur levels
+=========================================
+
+--- Applying LIGHT BLUR (5x5, sigma=1.5) to all images in batch ---
+
+================================================================================
+                   GPU GAUSSIAN BLUR - PERFORMANCE BENCHMARK                   
+================================================================================
+
+GPU Device Information:
+  Name: NVIDIA A100-SXM4-40GB
+  Compute Capability: 8.0
+  Global Memory: 42.48 GB
+  Shared Memory per Block: 48 KB
+  Max Threads per Block: 1024
+  Number of SMs: 108
+
+
+========================================
+BATCH MODE: Processing 1 images
+Kernel size: 5, Sigma: 1.50
+========================================
+
+Loading image 1/1: input_images/image.png
+Loaded image: input_images/image.png (1344x768, 3 channels)
+
+Processing batch with CUDA streams...
+Batch processing complete!
+  Total time: 0.002403 s
+  Throughput: 416.15 images/sec
+  Average time per image: 0.002403 s
+
+Saving output images...
+Saved image: output_images/image_blur_k5_s1.5.png
+  Saved: output_images/image_blur_k5_s1.5.png
+
+========================================
+Batch processing completed successfully!
+========================================
+
+--- Applying MEDIUM BLUR (7x7, sigma=2.0) to all images in batch ---
+
+================================================================================
+                   GPU GAUSSIAN BLUR - PERFORMANCE BENCHMARK                   
+================================================================================
+
+GPU Device Information:
+  Name: NVIDIA A100-SXM4-40GB
+  Compute Capability: 8.0
+  Global Memory: 42.48 GB
+  Shared Memory per Block: 48 KB
+  Max Threads per Block: 1024
+  Number of SMs: 108
+
+
+========================================
+BATCH MODE: Processing 1 images
+Kernel size: 7, Sigma: 2.00
+========================================
+
+Loading image 1/1: input_images/image.png
+Loaded image: input_images/image.png (1344x768, 3 channels)
+
+Processing batch with CUDA streams...
+Batch processing complete!
+  Total time: 0.002399 s
+  Throughput: 416.84 images/sec
+  Average time per image: 0.002399 s
+
+Saving output images...
+Saved image: output_images/image_blur_k7_s2.0.png
+  Saved: output_images/image_blur_k7_s2.0.png
+
+========================================
+Batch processing completed successfully!
+========================================
+
+--- Applying STRONG BLUR (11x11, sigma=3.0) to all images in batch ---
+
+================================================================================
+                   GPU GAUSSIAN BLUR - PERFORMANCE BENCHMARK                   
+================================================================================
+
+GPU Device Information:
+  Name: NVIDIA A100-SXM4-40GB
+  Compute Capability: 8.0
+  Global Memory: 42.48 GB
+  Shared Memory per Block: 48 KB
+  Max Threads per Block: 1024
+  Number of SMs: 108
+
+
+========================================
+BATCH MODE: Processing 1 images
+Kernel size: 11, Sigma: 3.00
+========================================
+
+Loading image 1/1: input_images/image.png
+Loaded image: input_images/image.png (1344x768, 3 channels)
+
+Processing batch with CUDA streams...
+Batch processing complete!
+  Total time: 0.002458 s
+  Throughput: 406.83 images/sec
+  Average time per image: 0.002458 s
+
+Saving output images...
+Saved image: output_images/image_blur_k11_s3.0.png
+  Saved: output_images/image_blur_k11_s3.0.png
+
+========================================
+Batch processing completed successfully!
+========================================
+
+=========================================
+Generated output files:
+=========================================
+output_images/image_blur_k11_s3.0.png (810K)
+output_images/image_blur_k5_s1.5.png (1.3M)
+output_images/image_blur_k7_s2.0.png (1.1M)
+
+
+=========================================
+All tests completed successfully!
+Job finished at: Sun Dec 21 23:32:01 EET 2025
+=========================================
+
+Output images saved in: output_images/
+Download them to verify visual quality
+
+GPU Utilization Summary:
+timestamp, name, utilization.gpu [%], utilization.memory [%], memory.used [MiB], memory.total [MiB]
+2025/12/21 23:32:01.110, NVIDIA A100-SXM4-40GB, 3 %, 0 %, 0 MiB, 40960 MiB
